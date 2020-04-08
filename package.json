@@ -1,0 +1,42 @@
+{
+  "name": "reviewer-backend",
+  "version": "1.0.0",
+  "description": "Ensuring a better moto-taxi transport service delivery",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon --exec babel-node ./app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KKDoddy/reviewer-backend.git"
+  },
+  "author": "KKDoddy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KKDoddy/reviewer-backend/issues"
+  },
+  "homepage": "https://github.com/KKDoddy/reviewer-backend#readme",
+  "dependencies": {
+    "@babel/node": "^7.8.7",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/runtime": "^7.9.2",
+    "bcrypt": "^4.0.1",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "path": "^0.12.7",
+    "pg": "^8.0.0",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.6"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/register": "^7.9.0",
+    "nodemon": "^2.0.2",
+    "sequelize-cli": "^5.5.1"
+  }
+}
