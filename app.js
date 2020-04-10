@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import apiRoutes from './routes';
+import './config/googleStrategy';
+import './config/facebookStrategy';
 
 const app = express();
 
