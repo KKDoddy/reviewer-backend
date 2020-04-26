@@ -11,7 +11,6 @@ const verifyToken = async (req, res, next) => {
   try {
     const access_token = req.header('access_token');
     const verify = jwt.verify(access_token, process.env.JWT_SECRET);
-    console.log(verify);
     const userExists = await User.findOne({
       where: { username: verify.username }
     });

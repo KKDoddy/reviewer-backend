@@ -9,7 +9,7 @@ const saveUser = async (body) => {
     const { name, email, password, username, gender, birthDate, social_id, profilePhoto, provider, isVerified } = body;
     let salt, hashedPassword;
     if(password){
-        hashDetails = await hashPassword(password);
+        const hashDetails = await hashPassword(password);
         salt = hashDetails.salt;
         hashedPassword = hashDetails.hashedPassword;
     }

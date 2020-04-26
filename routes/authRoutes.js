@@ -2,12 +2,13 @@ import Router from 'express';
 import passport from 'passport';
 import authController from '../controllers/authController';
 import tokenValidator from '../middlewares/tokenValidator';
+import  { signupValidator, signinValidator } from '../middlewares/formValidations';
 
 const router = Router();
 
 // local authentication
-router.post('/signup', authController.signup);
-router.post('/login', authController.signin);
+router.post('/signup', signupValidator, authController.signup);
+router.post('/login', signinValidator, authController.signin);
 router.post('/logout',tokenValidator, authController.logout);
 
 //social auth
