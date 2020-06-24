@@ -1,8 +1,13 @@
+import { validationResult } from 'express-validator';
 import userHelper from '../helpers/userHelper';
 import { checkPassword } from '../helpers/hasher';
 import { getToken, destroyToken } from '../helpers/tokenHelper';
 
 const signup = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ status: 422, errors });
+    }
     try {
         await userHelper.saveUser({ ...req.body, isVerified: false });
         return res.status(201).json({ status: 201, message: 'account successfully created' });
@@ -13,13 +18,17 @@ const signup = async (req, res) => {
 };
 
 const signin = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ status: 422, errors });
+    }
     const { usernameOrEmail, password } = req.body;
     const userExists = await userHelper.findUserByUsernameOrEmail(usernameOrEmail);
     if (userExists && await checkPassword(password, userExists.salt, userExists.password)) {
         const token = await getToken({username: userExists.username, role: userExists.role, id: userExists.id});
         return res.status(200).json({ status: 200, data: { token } });
     }
-    res.status(401).json({ status: 401, error: 'incorrect username/email or password' });
+    return res.status(401).json({ status: 401, error: 'incorrect username/email or password' });
 };
 
 const logout = async (req, res) => {
