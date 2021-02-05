@@ -49,7 +49,6 @@ const handleSocialAuth = async (req, res) => {
     const { isNew, user, error } = await userHelper.processSocialAuthUserData(req.user);
     if (isNew) {
       if (!error) {
-        console.log(user);
         const toSave = {
             name: user.name,
             email: user.email,
