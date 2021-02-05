@@ -23,13 +23,27 @@ const password = (passwordFieldName) => check(passwordFieldName, 'password shoul
     .isString()
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%\^&\*])(?=.*[0-9])(?=.{8,})/);
 
+const gender = check('gender', 'the gender field is required')
+    .exists()
+    .matches(new RegExp('^male$|^female$', 'i'))
+    .withMessage('field sould be male or female');
+
 const justAnotherString = (fieldName) => check(fieldName, `${fieldName} is required`).exists().not().isEmpty().isString();
 
 const signupValidator = [
     name,
     username,
     email,
-    password('password')
+    password('password'),
+    gender
+];
+
+const managerSignupValidator = [
+    username,
+    name,
+    email,
+    password('password'),
+    gender
 ];
 
 const signinValidator = [
@@ -37,4 +51,4 @@ const signinValidator = [
     justAnotherString('password')
 ];
 
-export { signupValidator, signinValidator };
+export { signupValidator, signinValidator, managerSignupValidator };

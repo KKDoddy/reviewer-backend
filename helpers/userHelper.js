@@ -6,7 +6,7 @@ const { User } = models;
 
 
 const saveUser = async (body) => {
-    const { name, email, password, username, gender, birthDate, social_id, profilePhoto, provider, isVerified } = body;
+    const { name, email, password, username, gender, role, birthDate, socialId, profilePhoto, provider, isVerified } = body;
     let salt, hashedPassword;
     if(password){
         const hashDetails = await hashPassword(password);
@@ -18,14 +18,14 @@ const saveUser = async (body) => {
         email,
         salt,
         username,
-        gender,
+        gender: gender.toUpperCase(),
         birthDate,
-        social_id,
+        socialId,
         profilePhoto,
         provider,
         password: hashedPassword,
         isVerified,
-        role: 'commuter',
+        role,
         createdAt: new Date(),
         updatedAt: new Date()
     });
@@ -43,10 +43,21 @@ const findUserByUsernameOrEmail = async (usernameOrEmail) => {
     });
 };
 
-const findUserBy = async (field, email) => {
+const findUserByEmailAndOrUsername = async (email, username) => {
+    return await User.findAll({
+        where: {
+            [Op.or]: [
+                { email },
+                { username }
+            ]
+        }
+    });
+};
+
+const findUserBy = async (field, value) => {
     return await User.findOne({
         where: {
-            [field]: email
+            [field]: value
         }
     });
 };
@@ -54,7 +65,7 @@ const findUserBy = async (field, email) => {
 const processSocialAuthUserData = async (userData) => {
     const { _json } = userData;
     const id = userData.provider === 'facebook' ? _json.id : _json.sub;
-    let userExists = await findUserBy('social_id', id);
+    let userExists = await findUserBy('socialId', id);
     if (userExists) {
       return { isNew: false, user: userExists };
     }
@@ -66,7 +77,7 @@ const processSocialAuthUserData = async (userData) => {
 
     const username = userData.displayName.toLowerCase().replace(' ','.');
     _json.username = username;
-    _json.social_id = id;
+    _json.socialId = id;
     _json.provider = userData.provider;
     return { isNew: true, user: _json };
   }
@@ -74,5 +85,6 @@ const processSocialAuthUserData = async (userData) => {
 export default {
     saveUser,
     findUserByUsernameOrEmail,
-    processSocialAuthUserData
+    processSocialAuthUserData,
+    findUserByEmailAndOrUsername
 }

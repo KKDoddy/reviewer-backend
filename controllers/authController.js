@@ -3,17 +3,23 @@ import userHelper from '../helpers/userHelper';
 import { checkPassword } from '../helpers/hasher';
 import { getToken, destroyToken } from '../helpers/tokenHelper';
 
+// const response = ({ status, message, error, object }) => {
+//     if (error) {
+//         return re
+//     }
+// };
+
 const signup = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(422).json({ status: 422, errors });
     }
     try {
-        await userHelper.saveUser({ ...req.body, isVerified: false });
+        req.body.role = 'COMMUTER';
+        const saved = await userHelper.saveUser({ ...req.body, isVerified: false });
         return res.status(201).json({ status: 201, message: 'account successfully created' });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ status: 500, error: 'unable to create account' })
+        return res.status(500).json({ status: 500, error: 'unable to create account' });
     }
 };
 
@@ -40,7 +46,6 @@ const logout = async (req, res) => {
         }
         return res.status(500).json({ status: 500, error: 'unexpected error while processing token' });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ status: 500, error: 'database error' });
     }
 };
@@ -53,7 +58,7 @@ const handleSocialAuth = async (req, res) => {
             name: user.name,
             email: user.email,
             username: user.username,
-            social_id: user.social_id,
+            socialId: user.socialId,
             profilePhoto: user.profilePhoto,
             provider: user.provider,
             password: null,
@@ -72,4 +77,25 @@ const handleSocialAuth = async (req, res) => {
     }
 };
 
-export default { signup, signin, logout, handleSocialAuth };
+const managerSignup = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ status: 422, errors });
+    }
+    try {
+        req.body.role = 'MANAGER';
+        const saved = await userHelper.saveUser({ ...req.body, isVerified: false });
+        return res.status(201).json({ status: 201,
+            message: 'account successfully created',
+            accountInfo: {
+                username: saved.username,
+                name: saved.name,
+                email: saved.gender,
+                gender: saved.gender
+            } });
+    } catch (error) {
+        return res.status(500).json({ status: 500, error: 'unable to create account' });
+    }
+};
+
+export default { signup, signin, logout, handleSocialAuth, managerSignup };
