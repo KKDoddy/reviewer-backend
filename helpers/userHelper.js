@@ -62,6 +62,46 @@ const findUserBy = async (field, value) => {
     });
 };
 
+const findAllUsersByRole = async (role) => {
+    return await User.findAll({
+        where: {
+            role: role.toUpperCase()
+        }
+    });
+};
+
+const findUserByRoleAndId = async (role, id) => {
+    return await User.findOne({
+        where: {
+            [Op.and]: {
+                role: role.toUpperCase(),
+                id
+            }
+        }
+    });
+};
+
+const findUserByRoleAndKeyWord = async (role, key) => {
+    return await User.findAll({
+        where: {
+            [Op.and]: {
+                role: role.toUpperCase(),
+                [Op.or]: [
+                    { name: {
+                        [Op.like]: `%${key}%`
+                    } },
+                    { email: {
+                        [Op.like]: `%${key}%`
+                    } },
+                    { username: {
+                        [Op.like]: `%${key}%`
+                    } }
+                ]
+            }
+        }
+    });
+};
+
 const processSocialAuthUserData = async (userData) => {
     const { _json } = userData;
     const id = userData.provider === 'facebook' ? _json.id : _json.sub;
@@ -82,8 +122,12 @@ const processSocialAuthUserData = async (userData) => {
     return { isNew: true, user: _json };
   }
 
-export default {
+export {
     saveUser,
+    findUserBy,
+    findUserByRoleAndId,
+    findAllUsersByRole,
+    findUserByRoleAndKeyWord,
     findUserByUsernameOrEmail,
     processSocialAuthUserData,
     findUserByEmailAndOrUsername

@@ -3,7 +3,7 @@ import userHelper from '../helpers/userHelper';
 const validateUniques = async (req, res, next) => {
     const { email, username } = req.body;
     const userExists = await userHelper.findUserByEmailAndOrUsername(email, username);
-    if (userExists) {
+    if (userExists.length) {
         if (userExists.length === 2 || (userExists[0].username === username && userExists[0].email === email)) {
             return res.status(409).json({ status: 409,
                 error: 'The provided email and username are already in use, verify your email and username and try again.'
