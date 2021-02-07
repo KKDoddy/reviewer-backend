@@ -10,6 +10,17 @@ const email = check('email', 'invalid email address')
     .isEmail()
     .normalizeEmail();
 
+const phone = check('phone', 'Phone number must be 10 numeric digits and start with 078 or 073.')
+    .exists()
+    .trim()
+    .isNumeric()
+    .matches(/^07[3,8][0-9]{7}/);
+
+const userId = (role) => check(role, `a valid ${role} is required.`)
+    .exists()
+    .trim()
+    .isNumeric();
+
 const username = check('username')
     .exists()
     .withMessage('username is required')
@@ -23,13 +34,27 @@ const password = (passwordFieldName) => check(passwordFieldName, 'password shoul
     .isString()
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\$%\^&\*])(?=.*[0-9])(?=.{8,})/);
 
+const gender = check('gender', 'the gender field is required')
+    .exists()
+    .matches(new RegExp('^male$|^female$', 'i'))
+    .withMessage('field sould be male or female');
+
 const justAnotherString = (fieldName) => check(fieldName, `${fieldName} is required`).exists().not().isEmpty().isString();
 
 const signupValidator = [
     name,
     username,
     email,
-    password('password')
+    password('password'),
+    gender
+];
+
+const managerSignupValidator = [
+    username,
+    name,
+    email,
+    password('password'),
+    gender
 ];
 
 const signinValidator = [
@@ -37,4 +62,16 @@ const signinValidator = [
     justAnotherString('password')
 ];
 
-export { signupValidator, signinValidator };
+const cooperativeValidator = [
+    name,
+    email,
+    phone,
+    userId('managerId')
+];
+
+export {
+    signupValidator,
+    signinValidator,
+    managerSignupValidator,
+    cooperativeValidator
+};

@@ -6,7 +6,7 @@ const up = (queryInterface, Sequelize) => {
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    social_id: { type: Sequelize.STRING, unique: true },
+    socialId: { type: Sequelize.STRING, unique: true },
     provider: { type: Sequelize.STRING },
     username: { type: Sequelize.STRING, unique: true },
     name: { type: Sequelize.STRING },

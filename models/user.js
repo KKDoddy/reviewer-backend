@@ -1,6 +1,6 @@
 const userDefinition = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
-    social_id: { type: DataTypes.STRING },
+    socialId: { type: DataTypes.STRING },
     provider: { type: DataTypes.STRING },
     username: { type: DataTypes.STRING },
     name: { type: DataTypes.STRING },

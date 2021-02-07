@@ -23,7 +23,7 @@ const reviewDefinition = (sequelize, DataTypes) => {
 
     Review.belongsTo(models.User, {
       foreignKey: 'driverId',
-      as: 'driverId'
+      as: 'driver'
     });
   };
   return Review;

@@ -2,16 +2,25 @@ import Router from 'express';
 import passport from 'passport';
 import authController from '../controllers/authController';
 import tokenValidator from '../middlewares/tokenValidator';
-import  { signupValidator, signinValidator } from '../middlewares/formValidations';
+import validateEmailOrUsername from '../middlewares/validateEmailOrUsername';
+import { isOperator } from '../middlewares/roleVerifier';
+import  { signupValidator, signinValidator, managerSignupValidator } from '../middlewares/formValidations';
 
 const router = Router();
 
-// local authentication
-router.post('/signup', signupValidator, authController.signup);
+        // LOCAL AUTHENTICATION ROUTES
+
+//commuter signup route
+router.post('/signup', signupValidator, validateEmailOrUsername, authController.signup);
+
+//manager signup route
+router.post('/signup/manager', tokenValidator, isOperator, managerSignupValidator, validateEmailOrUsername, authController.managerSignup);
+
+//all accounts routes
 router.post('/login', signinValidator, authController.signin);
 router.post('/logout',tokenValidator, authController.logout);
 
-//social auth
+        //SOCIAL AUTH
 router.get('/google', passport.authenticate('google',{ scope: ['profile', 'email'] }));
 router.get('/google/callback', passport.authenticate('google', { session: false }), authController.handleSocialAuth);
 
