@@ -1,8 +1,8 @@
-import userHelper from '../helpers/userHelper';
+import { findUserByEmailAndOrUsername } from '../helpers/userHelper';
 
 const validateUniques = async (req, res, next) => {
     const { email, username } = req.body;
-    const userExists = await userHelper.findUserByEmailAndOrUsername(email, username);
+    const userExists = await findUserByEmailAndOrUsername(email, username);
     if (userExists.length) {
         if (userExists.length === 2 || (userExists[0].username === username && userExists[0].email === email)) {
             return res.status(409).json({ status: 409,

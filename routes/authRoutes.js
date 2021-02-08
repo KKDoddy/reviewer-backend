@@ -3,7 +3,7 @@ import passport from 'passport';
 import authController from '../controllers/authController';
 import tokenValidator from '../middlewares/tokenValidator';
 import validateEmailOrUsername from '../middlewares/validateEmailOrUsername';
-import { isOperator } from '../middlewares/roleVerifier';
+import { isOperator, isManager } from '../middlewares/roleVerifier';
 import  { signupValidator, signinValidator, managerSignupValidator } from '../middlewares/formValidations';
 
 const router = Router();
@@ -15,6 +15,9 @@ router.post('/signup', signupValidator, validateEmailOrUsername, authController.
 
 //manager signup route
 router.post('/signup/manager', tokenValidator, isOperator, managerSignupValidator, validateEmailOrUsername, authController.managerSignup);
+
+//driver signup route
+router.post('/signup/driver', tokenValidator, isManager, managerSignupValidator, validateEmailOrUsername, authController.driverSignup);
 
 //all accounts routes
 router.post('/login', signinValidator, authController.signin);

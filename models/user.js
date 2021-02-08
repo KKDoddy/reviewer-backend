@@ -9,13 +9,14 @@ const userDefinition = (sequelize, DataTypes) => {
     salt: { type: DataTypes.STRING },
     gender: { type: DataTypes.ENUM('MALE', 'FEMALE') },
     role: { type: DataTypes.ENUM('OPERATOR', 'MANAGER', 'DRIVER', 'COMMUTER') },
+    cooperativeId: { type: DataTypes.INTEGER },
     isVerified: { type: DataTypes.BOOLEAN },
     profilePhoto: { type: DataTypes.TEXT },
     birthdate: { type: DataTypes.DATE },
     createdAt: { type: DataTypes.DATE },
     updatedAt: { type: DataTypes.DATE }
   }, {});
-  
+
   User.associate = (models) => {
     User.hasOne(models.Token, {
       foreignKey: 'userId',
@@ -46,6 +47,11 @@ const userDefinition = (sequelize, DataTypes) => {
 
     User.hasMany(models.Review, {
       foreignKey: 'driverId'
+    });
+
+    User.belongsTo(models.Cooperative, {
+      foreignKey: 'cooperativeId',
+      as: 'memberOf'
     });
   };
   return User;

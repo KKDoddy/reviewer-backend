@@ -7,7 +7,9 @@ const up = (queryInterface, Sequelize) => {
       type: Sequelize.INTEGER
     },
     plateNumber: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: false
     },
     driver: {
       type: Sequelize.INTEGER,

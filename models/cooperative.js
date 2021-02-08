@@ -12,6 +12,10 @@ const cooperativeDefinition = (sequelize, DataTypes) => {
     Cooperative.belongsTo(models.User, {
       foreignKey: 'manager'
     });
+
+    Cooperative.hasMany(models.User, {
+      foreignKey: 'cooperativeId'
+    });
   };
 
   return Cooperative
