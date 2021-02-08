@@ -15,6 +15,7 @@ const up = (queryInterface, Sequelize) => {
     salt: { type: Sequelize.STRING },
     gender: { type: Sequelize.ENUM('MALE', 'FEMALE') },
     role: { type: Sequelize.ENUM('OPERATOR', 'MANAGER', 'DRIVER', 'COMMUTER') },
+    cooperativeId: { type: Sequelize.INTEGER },
     isVerified: { type: Sequelize.BOOLEAN },
     profilePhoto: { type: Sequelize.TEXT },
     birthdate: { type: Sequelize.DATE },

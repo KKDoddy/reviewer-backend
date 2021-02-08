@@ -16,6 +16,11 @@ const phone = check('phone', 'Phone number must be 10 numeric digits and start w
     .isNumeric()
     .matches(/^07[3,8][0-9]{7}/);
 
+const plateNumber = check('plateNumber')
+    .exists()
+    .trim()
+    .matches(/^R[A-Z][0-9]{3}[A-Z]/);
+
 const userId = (role) => check(role, `a valid ${role} is required.`)
     .exists()
     .trim()
@@ -39,7 +44,7 @@ const gender = check('gender', 'the gender field is required')
     .matches(new RegExp('^male$|^female$', 'i'))
     .withMessage('field sould be male or female');
 
-const justAnotherString = (fieldName) => check(fieldName, `${fieldName} is required`).exists().not().isEmpty().isString();
+const justAnotherString = (fieldName) => check(fieldName, `${fieldName} is required`).exists().not().isEmpty().isString().isLength({ min: 3 });
 
 const signupValidator = [
     name,
@@ -69,9 +74,16 @@ const cooperativeValidator = [
     userId('managerId')
 ];
 
+const motorVehicleInfoValidator = [
+    plateNumber,
+    userId('driverId'),
+    justAnotherString('owner'),
+];
+
 export {
     signupValidator,
     signinValidator,
     managerSignupValidator,
-    cooperativeValidator
+    cooperativeValidator,
+    motorVehicleInfoValidator
 };
