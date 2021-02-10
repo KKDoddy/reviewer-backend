@@ -22,10 +22,6 @@ const up = (queryInterface, Sequelize) => {
     location: {
       type: Sequelize.STRING
     },
-    manager: {
-      type: Sequelize.INTEGER,
-      unique: true
-    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

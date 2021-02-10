@@ -1,21 +1,14 @@
-import { validationResult } from 'express-validator';
 import { saveMotorVehicle,
     findMotorVehicleById,
     findAllMotorVehicles,
     findMotorVehiclesByKeyWord,
     findMotorVehicleByPlateNumber } from '../helpers/motorVehicleHelper';
-import { findUserBy } from '../helpers/userHelper';
+import { findUserByRoleAndId } from '../helpers/userHelper';
 
 const createMotorVehicle = async (req, res) => {
-    const errors = validationResult(req);
     const { plateNumber } = req.body;
     const numbers = plateNumber.substr(2,3);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({
-            status: 422,
-            errors
-        });
-    }
+
     if (numbers == '000') {
         return res.status(422).json({
             status: 422,
@@ -33,7 +26,7 @@ const createMotorVehicle = async (req, res) => {
     }
     try {
         const {plateNumber, driverId, owner} = req.body;
-        const driverExists = await findUserBy('id', driverId);
+        const driverExists = await findUserByRoleAndId('DRIVER', driverId);
         if (driverExists) {
             const savedMotorVehicle = await saveMotorVehicle(plateNumber, driverId, owner);
             return res.status(200).json({
@@ -48,7 +41,6 @@ const createMotorVehicle = async (req, res) => {
             field: 'driverId'
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             status: 500,
             error: 'Server error, couldn\'t process request'

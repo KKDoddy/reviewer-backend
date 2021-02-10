@@ -1,6 +1,5 @@
 import { findUserByRoleAndId, findAllUsersByRole, findUserByRoleAndKeyWord } from '../helpers/userHelper';
 
-
 const viewSingleManager = async (req, res) => {
     let { id } = req.params;
     id = Number(id);

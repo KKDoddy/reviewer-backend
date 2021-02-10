@@ -5,14 +5,9 @@ const cooperativeDefinition = (sequelize, DataTypes) => {
     email: { type: DataTypes.STRING },
     phone: { type: DataTypes.STRING },
     location: {type: DataTypes.STRING},
-    manager: { type: DataTypes.INTEGER }
   }, {});
   
   Cooperative.associate = (models) => {
-    Cooperative.belongsTo(models.User, {
-      foreignKey: 'manager'
-    });
-
     Cooperative.hasMany(models.User, {
       foreignKey: 'cooperativeId'
     });

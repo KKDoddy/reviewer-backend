@@ -23,11 +23,6 @@ const userDefinition = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
 
-    User.hasOne(models.Cooperative, {
-      foreignKey: 'manager',
-      onDelete: 'RESTRICT'
-    });
-
     User.hasOne(models.MotorVehicle, {
       foreignKey: 'driver',
       onDelete: 'RESTRICT'

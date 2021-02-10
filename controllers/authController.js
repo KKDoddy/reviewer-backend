@@ -1,19 +1,8 @@
-import { validationResult } from 'express-validator';
-import { saveUser, findUserByUsernameOrEmail, processSocialAuthUserData } from '../helpers/userHelper';
+import { saveUser, findUserByUsernameOrEmail, processSocialAuthUserData, findUserByRoleAndCooperativeId } from '../helpers/userHelper';
 import { checkPassword } from '../helpers/hasher';
 import { getToken, destroyToken } from '../helpers/tokenHelper';
 
-// const response = ({ status, message, error, object }) => {
-//     if (error) {
-//         return re
-//     }
-// };
-
 const signup = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 422, errors });
-    }
     try {
         req.body.role = 'COMMUTER';
         const saved = await saveUser({ ...req.body, isVerified: false });
@@ -24,10 +13,6 @@ const signup = async (req, res) => {
 };
 
 const signin = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 422, errors });
-    }
     const { usernameOrEmail, password } = req.body;
     const userExists = await findUserByUsernameOrEmail(usernameOrEmail);
     if (userExists && await checkPassword(password, userExists.salt, userExists.password)) {
@@ -78,11 +63,14 @@ const handleSocialAuth = async (req, res) => {
 };
 
 const managerSignup = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 422, errors });
-    }
     try {
+        const alreadyManaged = await findUserByRoleAndCooperativeId('MANAGER', req.body.cooperativeId);
+        if (alreadyManaged) {
+            return res.status(403).json({
+                status: 403,
+                error: 'The cooperative already has a manager'
+            });
+        }
         req.body.role = 'MANAGER';
         const saved = await saveUser({ ...req.body, isVerified: false });
         return res.status(201).json({ status: 201,
@@ -94,17 +82,14 @@ const managerSignup = async (req, res) => {
                 gender: saved.gender
             } });
     } catch (error) {
-        return res.status(500).json({ status: 500, error: 'unable to create account' });
+        return res.status(500).json({ status: 500, error: 'Server error! Unable to create account.' });
     }
 };
 
 const driverSignup = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 422, errors });
-    }
     try {
         req.body.role = 'DRIVER';
+        req.body.cooperativeId = req.user.cooperativeId;
         const saved = await saveUser({ ...req.body, isVerified: false });
         return res.status(201).json({ status: 201,
             message: 'account successfully created',

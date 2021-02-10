@@ -16,16 +16,23 @@ const up = (queryInterface, Sequelize) => {
       type: Sequelize.FLOAT
     },
     startTime: {
-      type: Sequelize.TIME
+      type: Sequelize.DATE
     },
     endTime: {
-      type: Sequelize.TIME
+      type: Sequelize.DATE
     },
     commuterId: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      
     },
     driverId: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
+    status: {
+      type: Sequelize.ENUM('PENDING', 'APPROVED', 'DENIED', 'EN-ROUTE', 'ENDED'),
+      allowNull: false
     },
     createdAt: {
       allowNull: false,

@@ -4,7 +4,7 @@ const reviewDefinition = (sequelize, DataTypes) => {
     hygieneRating: { type: DataTypes.ENUM('1', '2', '3', '4', '5') },
     roadSafetyRating: { type: DataTypes.ENUM('1', '2', '3', '4', '5') },
     professionalismRating: { type: DataTypes.ENUM('1', '2', '3', '4', '5') },
-    averateRating: { type: DataTypes.FLOAT },
+    averageRating: { type: DataTypes.FLOAT },
     rideId: { type: DataTypes.INTEGER },
     commuterId: { type: DataTypes.INTEGER },
     driverId: { type: DataTypes.INTEGER }

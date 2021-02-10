@@ -10,6 +10,18 @@ const isIdSafeInteger = (req, res, next) => {
     });
 };
 
+const prepIdForValidations = (req, res, next) => {
+    const { rideId, cooperativeId } = req.body;
+    if (rideId) {
+        req.params.id = rideId;
+    }
+    else if (cooperativeId) {
+        req.params.id = cooperativeId;
+    }
+    return next();
+};
+
 export {
-    isIdSafeInteger
+    isIdSafeInteger,
+    prepIdForValidations
 };
