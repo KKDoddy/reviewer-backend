@@ -4,23 +4,25 @@ import authController from '../controllers/authController';
 import tokenValidator from '../middlewares/tokenValidator';
 import validateEmailOrUsername from '../middlewares/validateEmailOrUsername';
 import { isOperator, isManager } from '../middlewares/roleVerifier';
-import  { signupValidator, signinValidator, managerSignupValidator } from '../middlewares/formValidations';
+import  { signupValidator, signinValidator, coopMemberSignupValidator, validateForm } from '../middlewares/formValidations';
+import { isIdSafeInteger, prepIdForValidations } from '../middlewares/sanitizer';
+import { validateCooperativeId } from '../middlewares/cooperativeValiations';
 
 const router = Router();
 
         // LOCAL AUTHENTICATION ROUTES
 
 //commuter signup route
-router.post('/signup', signupValidator, validateEmailOrUsername, authController.signup);
+router.post('/signup', signupValidator, validateForm, validateEmailOrUsername, authController.signup);
 
 //manager signup route
-router.post('/signup/manager', tokenValidator, isOperator, managerSignupValidator, validateEmailOrUsername, authController.managerSignup);
+router.post('/signup/manager', tokenValidator, isOperator, coopMemberSignupValidator, validateForm, validateEmailOrUsername, prepIdForValidations, isIdSafeInteger, validateCooperativeId, authController.managerSignup);
 
 //driver signup route
-router.post('/signup/driver', tokenValidator, isManager, managerSignupValidator, validateEmailOrUsername, authController.driverSignup);
+router.post('/signup/driver', tokenValidator, isManager, signupValidator, validateForm, validateEmailOrUsername, authController.driverSignup);
 
 //all accounts routes
-router.post('/login', signinValidator, authController.signin);
+router.post('/login', signinValidator, validateForm, authController.signin);
 router.post('/logout',tokenValidator, authController.logout);
 
         //SOCIAL AUTH

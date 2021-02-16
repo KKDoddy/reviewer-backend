@@ -1,32 +1,47 @@
-import { validationResult } from 'express-validator';
-import { saveCooperative, findCooperativeById, findAllCooperatives, findCooperativesByKeyWord } from '../helpers/cooperativeHelper';
-import { findUserBy } from '../helpers/userHelper';
+import { saveCooperative, findCooperativeById, findAllCooperatives, findCooperativesByKeyWord, findDuplicates } from '../helpers/cooperativeHelper';
+import { findUserByRoleAndId } from '../helpers/userHelper';
 
 const createCooperative = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ status: 422, errors });
-    }
     try {
-        const {name, email, phone, managerId} = req.body;
-        const managerExists = await findUserBy('id', managerId);
-        if (managerExists) {
-            const savedCooperative = await saveCooperative(name, email, phone, managerId);
-            return res.status(200).json({
-                status: 200,
-                details: savedCooperative,
-                message: 'welcome to the register new cooperative route'
+        const {name, email, phone} = req.body;
+        const cooperativeExists = await findDuplicates(name,email,phone);
+        
+        if (cooperativeExists) {
+            const errors = [];
+            if (name === cooperativeExists.name) {
+                errors[errors.length] = {
+                    field: 'name',
+                    error: 'Another Cooperative with the same name already exists'
+                };
+            }
+            if (email === cooperativeExists.email) {
+                errors[errors.length] = {
+                    field: 'email',
+                    error: 'Another Cooperative with the same email already exists'
+                };
+            }
+            if (phone === cooperativeExists.phone) {
+                errors[errors.length] = {
+                    field: 'phone',
+                    error: 'Another Cooperative with the same phone already exists'
+                };
+            }
+            return res.status(409).json({
+                status: 409,
+                errors
             });
         }
-        return res.status(404).json({
-            status: 404,
-            error: 'manager not found',
-            field: 'managerId'
+
+        const savedCooperative = await saveCooperative(name, email, phone);
+        return res.status(200).json({
+            status: 200,
+            details: savedCooperative,
+            message: 'welcome to the register new cooperative route'
         });
     } catch (error) {
         return res.status(500).json({
             status: 500,
-            error: 'Server error, couldn\'t process request' 
+            error: 'Server error! Couldn\'t process request' 
         });
     }
 };

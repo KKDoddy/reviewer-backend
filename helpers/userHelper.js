@@ -6,7 +6,7 @@ const { User } = models;
 
 
 const saveUser = async (body) => {
-    const { name, email, password, username, gender, role, birthDate, socialId, profilePhoto, provider, isVerified } = body;
+    const { name, email, password, username, gender, role, birthDate, socialId, profilePhoto, provider, isVerified, cooperativeId } = body;
     let salt, hashedPassword;
     if(password){
         const hashDetails = await hashPassword(password);
@@ -26,6 +26,7 @@ const saveUser = async (body) => {
         password: hashedPassword,
         isVerified,
         role,
+        cooperativeId,
         createdAt: new Date(),
         updatedAt: new Date()
     });
@@ -81,6 +82,29 @@ const findUserByRoleAndId = async (role, id) => {
     });
 };
 
+const findUserByRoleAndCooperativeId = async (role, cooperativeId) => {
+    return await User.findOne({
+        where: {
+            [Op.and]: {
+                role,
+                cooperativeId
+            }
+        }
+    })
+};
+
+const findDriversByCooperativeId = async (cooperativeId) => {
+    return await User.findAll({
+        attributes: ['id'],
+        where: {
+            [Op.and]: {
+                role: 'DRIVER',
+                cooperativeId
+            }
+        }
+    })
+};
+
 const findUserByRoleAndKeyWord = async (role, key) => {
     return await User.findAll({
         where: {
@@ -125,10 +149,12 @@ const processSocialAuthUserData = async (userData) => {
 export {
     saveUser,
     findUserBy,
-    findUserByRoleAndId,
     findAllUsersByRole,
+    findUserByRoleAndId,
     findUserByRoleAndKeyWord,
-    findUserByUsernameOrEmail,
     processSocialAuthUserData,
-    findUserByEmailAndOrUsername
+    findUserByUsernameOrEmail,
+    findDriversByCooperativeId,
+    findUserByEmailAndOrUsername,
+    findUserByRoleAndCooperativeId
 }

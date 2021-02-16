@@ -3,13 +3,12 @@ import models from '../models';
 
 const { Cooperative } = models;
 
-const saveCooperative = async (name, email, phone, managerId) => {
+const saveCooperative = async (name, email, phone) => {
     const newCooperative = await Cooperative.create({
-        name,
+        name: name.toUpperCase(),
         email,
         phone,
         location: '',
-        manager: managerId,
         createdAt: new Date(),
         updatedAt: new Date()
     });
@@ -29,6 +28,18 @@ const findCooperativeById = async (id) => {
         }
     });
     return foundCooperative;
+};
+
+const findDuplicates = async (name,email,phone) => {
+    return await Cooperative.findOne({
+        where: {
+            [Op.or]: [
+                { name: name.toUpperCase() },
+                { email },
+                { phone }
+            ]
+        }
+    });
 };
 
 const findCooperativesByKeyWord = async (key) => {
@@ -54,5 +65,6 @@ export {
     saveCooperative,
     findCooperativeById,
     findAllCooperatives,
-    findCooperativesByKeyWord
+    findCooperativesByKeyWord,
+    findDuplicates
 }

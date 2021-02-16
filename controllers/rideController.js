@@ -1,0 +1,125 @@
+import {
+    createRideRequest,
+    findRideById,
+    updateRideStatus,
+    updateRideStart,
+    updateRideEnd
+} from '../helpers/rideHelper';
+import { findUserByRoleAndId } from '../helpers/userHelper';
+
+const saveRideRequest = async (req, res) => {
+    try {
+        const { id } = req.user;
+        const { driverId } = req.body;
+        const driverExists = await findUserByRoleAndId('DRIVER', driverId);
+        if (driverExists) {
+            const savedRideRequest = await createRideRequest(id, driverId);
+            return res.status(201).json({
+                status: 201,
+                message: 'Ride request created successfuy',
+                object: savedRideRequest
+            });
+        }
+        return res.status(404).json({
+            status: 404,
+            error: 'Driver with the given id does not exist'
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 500,
+            error: 'Server error!'
+        });
+    }
+
+};
+
+const approveRideRequest = async (req, res) => {
+    let { id } = req.params;
+    id = Number(id);
+    const rideRequestExists = await findRideById(id);
+    if (rideRequestExists) {
+        const updatedRideRequest = await updateRideStatus(id, 'APPROVED');
+        return res.status(201).json({
+            status: 201,
+            message: 'request updated successfuly',
+            object: updatedRideRequest
+        });
+    }
+    return res.status(404).json({
+        status: 404,
+        error: 'ride request not found!'
+    });
+};
+
+const denyRideRequest = async (req, res) => {
+    let { id } = req.params;
+    id = Number(id);
+    const rideRequestExists = await findRideById(id);
+    if (rideRequestExists) {
+        const updatedRideRequest = await updateRideStatus(id, 'DENIED');
+        return res.status(201).json({
+            status: 201,
+            message: 'request updated successfuly',
+            object: updatedRideRequest
+        });
+    }
+    return res.status(404).json({
+        status: 404,
+        error: 'ride request not found!'
+    });
+};
+
+const saveRideStart = async (req, res) => {
+    try {
+        const { startLocation, startTime } = req.body;
+        let { id } = req.params;
+        id = Number(id);
+        const updatedRide = await updateRideStart(id, startLocation, startTime);
+        return res.status(201).json({
+            status: 201,
+            message: 'Ride start recorded successfuly.',
+            object: updatedRide
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 500,
+            error: 'Server error!'
+        });
+    }
+};
+
+const saveRideEnd = async (req, res) => {
+    try {
+        const { rideExists } = req;
+        const { endLocation, endTime } = req.body;
+        let { id } = req.params;
+        id = Number(id);
+        if (!(rideExists.startTime < endTime)) {
+            return res.status(403).json({
+                status: 403,
+                error: '!!!! Time travel !!!! Ride end-time must be newer to the ride start-time.',
+                recordedStartTime: rideExists.startTime,
+                providedEndTime: endTime
+            });
+        }
+        const updatedRide = await updateRideEnd(id, endLocation, endTime);
+        return res.status(201).json({
+            status: 201,
+            message: 'Ride end recorded successfuly.',
+            object: updatedRide
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 500,
+            error: 'Server error!'
+        });
+    }
+};
+
+export {
+    saveRideRequest,
+    approveRideRequest,
+    denyRideRequest,
+    saveRideStart,
+    saveRideEnd
+}

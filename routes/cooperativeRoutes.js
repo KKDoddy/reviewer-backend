@@ -2,12 +2,12 @@ import Router from 'express';
 import { createCooperative, viewSingleCooperative, viewAllCooperatives, searchCooperatives } from '../controllers/cooperativesController';
 import tokenValidator from '../middlewares/tokenValidator';
 import { isOperator } from '../middlewares/roleVerifier';
-import { cooperativeValidator } from '../middlewares/formValidations';
+import { cooperativeValidator, validateForm } from '../middlewares/formValidations';
 import { isIdSafeInteger } from '../middlewares/sanitizer';
 
 const router = Router();
 
-router.post('/new', tokenValidator, isOperator, cooperativeValidator, createCooperative);
+router.post('/new', tokenValidator, isOperator, cooperativeValidator, validateForm, createCooperative);
 
 router.get('/:id', tokenValidator, isOperator, isIdSafeInteger, viewSingleCooperative);
 
