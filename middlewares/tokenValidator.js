@@ -12,7 +12,7 @@ const verifyToken = async (req, res, next) => {
     const access_token = req.header('access_token');
     const verify = jwt.verify(access_token, process.env.JWT_SECRET);
     const userExists = await User.findOne({
-      where: { username: verify.username }
+      where: { id: verify.id }
     });
     const tokenExists = await Token.findOne({
       where: { tokenValue: access_token }

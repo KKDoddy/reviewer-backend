@@ -11,6 +11,7 @@ const up = (queryInterface, Sequelize) => {
     username: { type: Sequelize.STRING, unique: true },
     name: { type: Sequelize.STRING },
     email: { type: Sequelize.STRING, unique: true },
+    phoneNumber: { type: Sequelize.STRING, unique: true },
     password: { type: Sequelize.STRING },
     salt: { type: Sequelize.STRING },
     gender: { type: Sequelize.ENUM('MALE', 'FEMALE') },

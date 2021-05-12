@@ -1,4 +1,4 @@
-import { saveUser, findUserByUsernameOrEmail, processSocialAuthUserData, findUserByRoleAndCooperativeId } from '../helpers/userHelper';
+import { saveUser, findUserByUsernameOrEmail, processSocialAuthUserData, findUserByRoleAndCooperativeId, updateUser } from '../helpers/userHelper';
 import { checkPassword } from '../helpers/hasher';
 import { getToken, destroyToken } from '../helpers/tokenHelper';
 
@@ -16,7 +16,7 @@ const signin = async (req, res) => {
     const { usernameOrEmail, password } = req.body;
     const userExists = await findUserByUsernameOrEmail(usernameOrEmail);
     if (userExists && await checkPassword(password, userExists.salt, userExists.password)) {
-        const token = await getToken({username: userExists.username, role: userExists.role, id: userExists.id});
+        const token = await getToken({ role: userExists.role, id: userExists.id});
         return res.status(200).json({ status: 200, data: { token } });
     }
     return res.status(401).json({ status: 401, error: 'incorrect username/email or password' });
@@ -104,11 +104,27 @@ const driverSignup = async (req, res) => {
     }
 };
 
+const updateProfile = async (req, res) =>{
+    try {
+        const { id } = req.user;
+        const { name, username, phoneNumber, gender, birthdate } = req.body;
+        const updated = await updateUser({ name, username, phoneNumber, gender, birthdate, id });
+        return res.status(201).json({
+            status: 201,
+            message: 'user profile updated successfully'
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, error: 'unable to create account' });
+    }
+};
+
 export default {
     signup,
     signin,
     logout,
     handleSocialAuth,
     managerSignup,
-    driverSignup
+    driverSignup,
+    updateProfile
 };

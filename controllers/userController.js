@@ -27,11 +27,21 @@ const viewSingleDriver = async (req, res) => {
     let { id } = req.params;
     id = Number(id);
     try {
-        const foundDriver = await findUserByRoleAndId('DRIVER', id);
+        const foundDriver = await findUserByRoleAndId('DRIVER', id, 'driverRides', 'driverReviews');
         if (foundDriver) {
+            const { 
+                id,
+                username,
+                name,
+                email,
+                phoneNumber,
+                profilePhoto,
+                driverRides,
+                driverReviews
+             } = foundDriver;
             return res.status(200).json({
                 status: 200,
-                object: foundDriver
+                object: { id, name, username, email, phoneNumber, profilePhoto, driverRides, driverReviews }
             });
         }
         return res.status(404).json({
@@ -121,9 +131,10 @@ const searchDrivers = async (req, res) => {
                 objects: foundDrivers
             });
         }
-        return res.status(404).json({
-            status: 404,
-            error: 'No match was found!'
+        return res.status(200).json({
+            status: 200,
+            objects: [],
+            message: 'No match was found!'
         });
     } catch (error) {
         return res.status(500).json({
@@ -134,11 +145,37 @@ const searchDrivers = async (req, res) => {
     }
 };
 
+const viewCommuterProfile = async (req, res) => {
+    let { id } = req.params;
+    id = Number(id);
+    try {
+        const foundCommuter = await findUserByRoleAndId('COMMUTER', id, 'userRides', 'userReviews');
+        if (foundCommuter) {
+            const { username, name, email, gender, role, profilePhoto, birthdate, userRides, userReviews, phoneNumber } = foundCommuter;
+            return res.status(200).json({
+                status: 200,
+                data: { username, name, email, gender, role, profilePhoto, birthdate, userRides, userReviews, phoneNumber }
+            });
+        }
+        return res.status(404).json({
+            status: 404,
+            error: 'Commuter not found'
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            status: 500,
+            error: 'Server error!'
+        });
+    }
+};
+
 export {
     viewSingleManager,
     viewAllManagers,
     searchManagers,
     viewSingleDriver,
     viewAllDrivers,
-    searchDrivers
+    searchDrivers,
+    viewCommuterProfile,
 }
