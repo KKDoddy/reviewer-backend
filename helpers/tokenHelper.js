@@ -7,8 +7,8 @@ const { Token } = models;
 
 dotenv.config();
 
-const generateToken = ({ username, role }) => {
-    const generatedToken = jwt.sign({ username, role }, process.env.JWT_SECRET);
+const generateToken = ({ role, id }) => {
+    const generatedToken = jwt.sign({ role, id }, process.env.JWT_SECRET);
     return generatedToken;
 };
 
@@ -21,7 +21,7 @@ const getToken = async ({ username, role, id }) => {
     if (tokenExists) {
         return tokenExists.tokenValue;
     }
-    const generatedToken = generateToken({username, role});
+    const generatedToken = generateToken({username, role ,id});
     await Token.create({
         userId: id,
         tokenValue: generatedToken,

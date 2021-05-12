@@ -1,5 +1,4 @@
 import { saveCooperative, findCooperativeById, findAllCooperatives, findCooperativesByKeyWord, findDuplicates } from '../helpers/cooperativeHelper';
-import { findUserByRoleAndId } from '../helpers/userHelper';
 
 const createCooperative = async (req, res) => {
     try {

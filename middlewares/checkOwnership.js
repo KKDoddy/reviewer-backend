@@ -42,7 +42,20 @@ const isCommuterRideOwner = async (req, res, next) => {
     });
 };
 
+const isSelf = async (req, res, next) => {
+    const selfId = req.user.id;
+    let { id } = req.params;
+    if (Number(id) === selfId) {
+        return next();
+    }
+    return res.status(401).json({
+        status: 401,
+        error: 'Not authorized!'
+    });
+};
+
 export {
     isDriverRideOwner,
-    isCommuterRideOwner
+    isCommuterRideOwner,
+    isSelf
 }

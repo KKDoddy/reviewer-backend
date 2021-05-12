@@ -5,6 +5,7 @@ const userDefinition = (sequelize, DataTypes) => {
     username: { type: DataTypes.STRING },
     name: { type: DataTypes.STRING },
     email: { type: DataTypes.STRING },
+    phoneNumber: { type: DataTypes.STRING },
     password: { type: DataTypes.STRING },
     salt: { type: DataTypes.STRING },
     gender: { type: DataTypes.ENUM('MALE', 'FEMALE') },
@@ -29,19 +30,23 @@ const userDefinition = (sequelize, DataTypes) => {
     });
 
     User.hasMany(models.Ride, {
-      foreignKey: 'commuterId'
+      foreignKey: 'commuterId',
+      as: 'userRides'
     });
 
     User.hasMany(models.Ride, {
-      foreignKey: 'driverId'
+      foreignKey: 'driverId',
+      as: 'driverRides'
     });
 
     User.hasMany(models.Review, {
-      foreignKey: 'commuterId'
+      foreignKey: 'commuterId',
+      as: 'userReviews'
     });
 
     User.hasMany(models.Review, {
-      foreignKey: 'driverId'
+      foreignKey: 'driverId',
+      as: 'driverReviews'
     });
 
     User.belongsTo(models.Cooperative, {

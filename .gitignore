@@ -19,6 +19,7 @@ node_modules/
 # Optional npm cache directory
 .npm
 package-lock.json
+yarn.lock
 
 # dotenv environment variables file
 .env

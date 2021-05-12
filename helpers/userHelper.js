@@ -2,11 +2,11 @@ import { Op } from 'sequelize';
 import models from '../models';
 import { hashPassword } from '../helpers/hasher';
 
-const { User } = models;
+const { User, Ride, Review } = models;
 
 
 const saveUser = async (body) => {
-    const { name, email, password, username, gender, role, birthDate, socialId, profilePhoto, provider, isVerified, cooperativeId } = body;
+    const { name, email, password, username, gender, role, birthDate, socialId, profilePhoto, provider, isVerified, cooperativeId, phoneNumber } = body;
     let salt, hashedPassword;
     if(password){
         const hashDetails = await hashPassword(password);
@@ -18,6 +18,7 @@ const saveUser = async (body) => {
         email,
         salt,
         username,
+        phoneNumber,
         gender: gender.toUpperCase(),
         birthDate,
         socialId,
@@ -44,12 +45,16 @@ const findUserByUsernameOrEmail = async (usernameOrEmail) => {
     });
 };
 
-const findUserByEmailAndOrUsername = async (email, username) => {
+const findUserByEmailAndOrUsernameAndPhoneNumber = async (email, username, phoneNumber) => {
+    if(!email){
+        email = ''
+    }
     return await User.findAll({
         where: {
             [Op.or]: [
                 { email },
-                { username }
+                { username },
+                { phoneNumber }
             ]
         }
     });
@@ -71,15 +76,29 @@ const findAllUsersByRole = async (role) => {
     });
 };
 
-const findUserByRoleAndId = async (role, id) => {
-    return await User.findOne({
-        where: {
-            [Op.and]: {
-                role: role.toUpperCase(),
-                id
+const findUserByRoleAndId = async (role, id, rideAlias, reviewAlias) => {
+    let user = {};
+    if(rideAlias && reviewAlias) {
+        user = await User.findOne({
+            where: {
+                [Op.and]: {
+                    role: role.toUpperCase(),
+                    id
+                }
+            },
+            include: [{ model: Ride, as: rideAlias }, { model: Review, as: reviewAlias }]
+        });
+    } else {
+        user = await User.findOne({
+            where: {
+                [Op.and]: {
+                    role: role.toUpperCase(),
+                    id
+                }
             }
-        }
-    });
+        });
+    }
+    return user;
 };
 
 const findUserByRoleAndCooperativeId = async (role, cooperativeId) => {
@@ -107,6 +126,7 @@ const findDriversByCooperativeId = async (cooperativeId) => {
 
 const findUserByRoleAndKeyWord = async (role, key) => {
     return await User.findAll({
+        attributes: ['id', 'name', 'username', 'phoneNumber', 'profilePhoto'],
         where: {
             [Op.and]: {
                 role: role.toUpperCase(),
@@ -146,6 +166,21 @@ const processSocialAuthUserData = async (userData) => {
     return { isNew: true, user: _json };
   }
 
+  const updateUser = async ({ name, username, phoneNumber, gender, birthdate, id }) => {
+    return await User.update({
+        name,
+        username,
+        phoneNumber,
+        gender: gender.toUpperCase(),
+        birthdate
+    },
+    {
+        where: {
+            id
+        }
+    });
+  };
+
 export {
     saveUser,
     findUserBy,
@@ -155,6 +190,7 @@ export {
     processSocialAuthUserData,
     findUserByUsernameOrEmail,
     findDriversByCooperativeId,
-    findUserByEmailAndOrUsername,
-    findUserByRoleAndCooperativeId
+    findUserByEmailAndOrUsernameAndPhoneNumber,
+    findUserByRoleAndCooperativeId,
+    updateUser
 }

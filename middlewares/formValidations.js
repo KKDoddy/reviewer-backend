@@ -13,17 +13,18 @@ const email = check('email', 'invalid email address')
     .isEmail()
     .normalizeEmail();
 
-const phone = check('phone', 'Phone number must be 10 numeric digits and start with 078 or 073.')
-    .exists()
-    .trim()
-    .isNumeric()
-    .matches(/^07[3,8][0-9]{7}/);
+const phone = (fieldName) => check(fieldName, 'Phone number is required and must be 10 numeric digits and start with 078 or 073.')
+                            .exists()
+                            .trim()
+                            .isString()
+                            .matches(/^07[3,8][0-9]{7}$/);
 
 const plateNumber = check('plateNumber')
     .exists()
     .notEmpty()
-    .trim()
-    .matches(/^R[A-Z][0-9]{3}[A-Z]/);
+    .trim().
+    isString()
+    .matches(/^R[A-Z][0-9]{3}[A-Z]$/);
 
 const entityId = (idName) => check(idName, `a valid ${idName} is required.`)
     .exists()
@@ -62,7 +63,7 @@ const rateField = (fieldName) => check(fieldName)
     .matches(/^[1-5]{1}/)
     .withMessage(`${fieldName} should either be 1, 2, 3, 4 or 5`);
 
-const justAnotherString = (fieldName) => check(fieldName, `${fieldName} is required`).exists().not().isEmpty().isString().isLength({ min: 3 });
+const justAnotherString = (fieldName) => check(fieldName, `${fieldName} is required, and should atleast be 3 characters long`).exists().not().isEmpty().isString().isLength({ min: 3 });
 
 const locationFieldValidation = (fieldName) => check(fieldName, `${fieldName} is required and should be a valid location`).exists().notEmpty().isLatLong();
 
@@ -73,6 +74,14 @@ const signupValidator = [
     username,
     email,
     password('password'),
+    gender,
+    phone('phoneNumber')
+];
+
+const profileUpdateValidator = [
+    name,
+    username,
+    phone('phoneNumber'),
     gender
 ];
 
@@ -82,7 +91,8 @@ const coopMemberSignupValidator = [
     email,
     password('password'),
     gender,
-    entityId('cooperativeId')
+    entityId('cooperativeId'),
+    phone('phoneNumber')
 ];
 
 const signinValidator = [
@@ -93,7 +103,7 @@ const signinValidator = [
 const cooperativeValidator = [
     name,
     email,
-    phone
+    phone('phone')
 ];
 
 const motorVehicleInfoValidator = [
@@ -141,4 +151,5 @@ export {
     validateRideStartInfo,
     validateRideEndInfo,
     reviewValidator,
+    profileUpdateValidator,
 };

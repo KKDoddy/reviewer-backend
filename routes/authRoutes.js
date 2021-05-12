@@ -2,9 +2,9 @@ import Router from 'express';
 import passport from 'passport';
 import authController from '../controllers/authController';
 import tokenValidator from '../middlewares/tokenValidator';
-import validateEmailOrUsername from '../middlewares/validateEmailOrUsername';
-import { isOperator, isManager } from '../middlewares/roleVerifier';
-import  { signupValidator, signinValidator, coopMemberSignupValidator, validateForm } from '../middlewares/formValidations';
+import {validateUniques, validateUpdateUniques} from '../middlewares/validateEmailOrUsername';
+import { isOperator, isManager, isCommuter } from '../middlewares/roleVerifier';
+import  { signupValidator, signinValidator, coopMemberSignupValidator, validateForm, profileUpdateValidator } from '../middlewares/formValidations';
 import { isIdSafeInteger, prepIdForValidations } from '../middlewares/sanitizer';
 import { validateCooperativeId } from '../middlewares/cooperativeValiations';
 
@@ -13,13 +13,14 @@ const router = Router();
         // LOCAL AUTHENTICATION ROUTES
 
 //commuter signup route
-router.post('/signup', signupValidator, validateForm, validateEmailOrUsername, authController.signup);
+router.post('/signup', signupValidator, validateForm, validateUniques, authController.signup);
+router.put('/updateProfile', tokenValidator, isCommuter, profileUpdateValidator, validateForm, validateUpdateUniques, authController.updateProfile);
 
 //manager signup route
-router.post('/signup/manager', tokenValidator, isOperator, coopMemberSignupValidator, validateForm, validateEmailOrUsername, prepIdForValidations, isIdSafeInteger, validateCooperativeId, authController.managerSignup);
+router.post('/signup/manager', tokenValidator, isOperator, coopMemberSignupValidator, validateForm, validateUniques, prepIdForValidations, isIdSafeInteger, validateCooperativeId, authController.managerSignup);
 
 //driver signup route
-router.post('/signup/driver', tokenValidator, isManager, signupValidator, validateForm, validateEmailOrUsername, authController.driverSignup);
+router.post('/signup/driver', tokenValidator, isManager, signupValidator, validateForm, validateUniques, authController.driverSignup);
 
 //all accounts routes
 router.post('/login', signinValidator, validateForm, authController.signin);
