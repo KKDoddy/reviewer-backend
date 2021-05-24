@@ -19,7 +19,7 @@ const saveReview = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'Review saved successfuly',
-            object: savedReview
+            data: savedReview
         });
     } catch (error) {
         return res.status(500).json({
@@ -46,7 +46,7 @@ const editReview = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'Review successfuly updated.',
-            object: updatedReview
+            data: updatedReview
         });
     } catch (error) {
         return res.status(500).json({
@@ -70,7 +70,7 @@ const deleteReview = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'Review successfuly deleted.',
-            object: deletedReview
+            data: deletedReview
         });
     } catch (error) {
         return res.status(500).json({
@@ -91,7 +91,7 @@ const viewReviews = async (req, res) => {
                 return res.status(200).json({
                     status: 200,
                     message: 'Successful retrieval!',
-                    object: reviews
+                    data: reviews
                 });
             }
             return res.status(404).json({
@@ -105,7 +105,7 @@ const viewReviews = async (req, res) => {
         return res.status(200).json({
             status: 200,
             message: 'Successful retrieval!',
-            object: reviews
+            data: reviews
         });
     } catch (error) {
         return res.status(500).json({
@@ -123,7 +123,7 @@ const viewSingleReview = async (req, res) => {
             return res.status(200).json({
                 status: 200,
                 message: 'Review successfuly found',
-                object: foundReview
+                data: foundReview
             });
         }
         return res.status(404).json({
@@ -153,7 +153,7 @@ const viewDriverReviews = async (req, res) => {
             return res.status(200).json({
                 status: 200,
                 message: 'Reviews were found successfuly',
-                objects: reviews
+                data: reviews
             });
         }
         return res.status(404).json({

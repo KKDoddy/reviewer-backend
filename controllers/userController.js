@@ -8,7 +8,7 @@ const viewSingleManager = async (req, res) => {
         if (foundManager) {
             return res.status(200).json({
                 status: 200,
-                object: foundManager
+                data: foundManager
             });
         }
         return res.status(404).json({
@@ -41,7 +41,7 @@ const viewSingleDriver = async (req, res) => {
              } = foundDriver;
             return res.status(200).json({
                 status: 200,
-                object: { id, name, username, email, phoneNumber, profilePhoto, driverRides, driverReviews }
+                data: { id, name, username, email, phoneNumber, profilePhoto, driverRides, driverReviews }
             });
         }
         return res.status(404).json({
@@ -62,7 +62,7 @@ const viewAllManagers = async (req, res) => {
         if (foundManagers.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundManagers
+                data: foundManagers
             });
         }
         return res.status(404).json({
@@ -83,7 +83,7 @@ const viewAllDrivers = async (req, res) => {
         if (foundDrivers.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundDrivers
+                data: foundDrivers
             });
         }
         return res.status(404).json({
@@ -105,7 +105,7 @@ const searchManagers = async (req, res) => {
         if (foundManagers.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundManagers
+                data: foundManagers
             });
         }
         return res.status(404).json({
@@ -128,12 +128,12 @@ const searchDrivers = async (req, res) => {
         if (foundDrivers.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundDrivers
+                data: foundDrivers
             });
         }
         return res.status(200).json({
             status: 200,
-            objects: [],
+            data: [],
             message: 'No match was found!'
         });
     } catch (error) {

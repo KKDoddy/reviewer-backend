@@ -56,7 +56,7 @@ const viewSingleMotorVehicle = async (req, res) => {
         if (foundMotorVehicle) {
             return res.status(200).json({
                 status: 200,
-                object: foundMotorVehicle
+                data: foundMotorVehicle
             });
         }
         return res.status(404).json({
@@ -77,7 +77,7 @@ const viewAllMotorVehicles = async (req, res) => {
         if (foundMotorVehicles.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundMotorVehicles
+                data: foundMotorVehicles
             });
         }
         return res.status(404).json({
@@ -99,7 +99,7 @@ const searchMotorVehicles = async (req, res) => {
         if (foundMotorVehicles.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundMotorVehicles
+                data: foundMotorVehicles
             });
         }
         return res.status(404).json({

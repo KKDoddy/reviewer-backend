@@ -3,7 +3,8 @@ import {
     findRideById,
     updateRideStatus,
     updateRideStart,
-    updateRideEnd
+    updateRideEnd,
+    findRidesByUserId
 } from '../helpers/rideHelper';
 import { findUserByRoleAndId } from '../helpers/userHelper';
 
@@ -17,7 +18,7 @@ const saveRideRequest = async (req, res) => {
             return res.status(201).json({
                 status: 201,
                 message: 'Ride request created successfuy',
-                object: savedRideRequest
+                data: savedRideRequest
             });
         }
         return res.status(404).json({
@@ -42,7 +43,7 @@ const approveRideRequest = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'request updated successfuly',
-            object: updatedRideRequest
+            data: updatedRideRequest
         });
     }
     return res.status(404).json({
@@ -60,7 +61,7 @@ const denyRideRequest = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'request updated successfuly',
-            object: updatedRideRequest
+            data: updatedRideRequest
         });
     }
     return res.status(404).json({
@@ -78,7 +79,7 @@ const saveRideStart = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'Ride start recorded successfuly.',
-            object: updatedRide
+            data: updatedRide
         });
     } catch (error) {
         return res.status(500).json({
@@ -106,7 +107,7 @@ const saveRideEnd = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'Ride end recorded successfuly.',
-            object: updatedRide
+            data: updatedRide
         });
     } catch (error) {
         return res.status(500).json({
@@ -116,10 +117,27 @@ const saveRideEnd = async (req, res) => {
     }
 };
 
+const viewMyRides = async (req, res) => {
+    const { id, role, name } = req.user;
+    const idFieldName = role === 'DRIVER' ? 'driverId' : 'commuterId';
+    const rides = await findRidesByUserId(idFieldName, id);
+    if(rides.length) {
+        return res.status(200).json({
+            status: 200,
+            data: rides
+        });
+    }
+    return res.status(200).json({
+        status: 200,
+        data: []
+    });
+};
+
 export {
     saveRideRequest,
     approveRideRequest,
     denyRideRequest,
     saveRideStart,
-    saveRideEnd
+    saveRideEnd,
+    viewMyRides
 }
