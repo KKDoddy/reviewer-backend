@@ -53,7 +53,7 @@ const viewSingleCooperative = async (req, res) => {
         if (foundCooperative) {
             return res.status(200).json({
                 status: 200,
-                object: foundCooperative
+                data: foundCooperative
             });
         }
         return res.status(404).json({
@@ -74,7 +74,7 @@ const viewAllCooperatives = async (req, res) => {
         if (foundCooperatives.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundCooperatives
+                data: foundCooperatives
             });
         }
         return res.status(404).json({
@@ -96,7 +96,7 @@ const searchCooperatives = async (req, res) => {
         if (foundCooperatives.length) {
             return res.status(200).json({
                 status: 200,
-                objects: foundCooperatives
+                data: foundCooperatives
             });
         }
         return res.status(404).json({

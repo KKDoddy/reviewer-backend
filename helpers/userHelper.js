@@ -86,7 +86,7 @@ const findUserByRoleAndId = async (role, id, rideAlias, reviewAlias) => {
                     id
                 }
             },
-            include: [{ model: Ride, as: rideAlias }, { model: Review, as: reviewAlias }]
+            include: [{ model: Ride, as: rideAlias, where: { status: 'ENDED' } }, { model: Review, as: reviewAlias, include: [{ model: User, as: 'commuter', attributes: [ 'name', 'username', 'profilePhoto' ] }] }]
         });
     } else {
         user = await User.findOne({

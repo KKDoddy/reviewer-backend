@@ -22,7 +22,8 @@ const rideDefinition = (sequelize, DataTypes) => {
     });
 
     Ride.hasOne(models.Review, {
-      foreignKey: 'rideId'
+      foreignKey: 'rideId',
+      as: 'review'
     });
   };
 
