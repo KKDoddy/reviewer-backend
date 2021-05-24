@@ -90,7 +90,7 @@ const driverSignup = async (req, res) => {
     try {
         req.body.role = 'DRIVER';
         req.body.cooperativeId = req.user.cooperativeId;
-        const saved = await saveUser({ ...req.body, isVerified: false });
+        const saved = await saveUser({ ...req.body, isVerified: false, reviewCount: 0, cummulativeRating: 0 });
         return res.status(201).json({ status: 201,
             message: 'account successfully created',
             accountInfo: {

@@ -17,6 +17,8 @@ const up = (queryInterface, Sequelize) => {
     gender: { type: Sequelize.ENUM('MALE', 'FEMALE') },
     role: { type: Sequelize.ENUM('OPERATOR', 'MANAGER', 'DRIVER', 'COMMUTER') },
     cooperativeId: { type: Sequelize.INTEGER },
+    cummulativeRating: { type: Sequelize.FLOAT },
+    reviewCount: { type: Sequelize.INTEGER },
     isVerified: { type: Sequelize.BOOLEAN },
     profilePhoto: { type: Sequelize.TEXT },
     birthdate: { type: Sequelize.DATE },

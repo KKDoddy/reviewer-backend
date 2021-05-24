@@ -50,10 +50,22 @@ const canViewReviews = (req, res, next) => {
     });
 }
 
+const isDriverOrCommuter = (req, res, next) => {
+    const { role } = req.user;
+    if (role === 'COMMUTER' || role === 'DRIVER') {
+        return next();
+    }
+    return res.status(401).json({
+        status: 401,
+        message: 'Sorry, you are not authorized to access this route.'
+    });
+}
+
 export {
     isOperator,
     isManager,
     isCommuter,
     isDriver,
-    canViewReviews
+    canViewReviews,
+    isDriverOrCommuter
 };

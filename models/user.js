@@ -11,6 +11,8 @@ const userDefinition = (sequelize, DataTypes) => {
     gender: { type: DataTypes.ENUM('MALE', 'FEMALE') },
     role: { type: DataTypes.ENUM('OPERATOR', 'MANAGER', 'DRIVER', 'COMMUTER') },
     cooperativeId: { type: DataTypes.INTEGER },
+    cummulativeRating: { type: DataTypes.FLOAT },
+    reviewCount: { type: DataTypes.INTEGER },
     isVerified: { type: DataTypes.BOOLEAN },
     profilePhoto: { type: DataTypes.TEXT },
     birthdate: { type: DataTypes.DATE },

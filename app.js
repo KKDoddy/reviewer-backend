@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import apiRoutes from './routes';
 import './config/googleStrategy';
 import './config/facebookStrategy';
+import socketInitializer from 'socket.io';
+import { registerSocket } from './helpers/socketHelper';
 
 const app = express();
 
@@ -20,8 +22,16 @@ app.all('*', (req, res) => {
     res.status(404).json({ status: 404, message: 'Sorry! route not found' });
 });
 
-app.listen( process.env.PORT, () =>{
+const listener = app.listen( process.env.PORT, () =>{
     console.log(`server is running on port ${process.env.PORT}`);
 });
 
+const serverSocket  = socketInitializer(listener);
+
+serverSocket.on('connection', (socket) => {
+    console.log('new client connected to server');
+    registerSocket(socket);
+});
+
+export { serverSocket }
 export default app;

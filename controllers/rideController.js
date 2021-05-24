@@ -3,9 +3,12 @@ import {
     findRideById,
     updateRideStatus,
     updateRideStart,
-    updateRideEnd
+    updateRideEnd,
+    findRidesByUserId
 } from '../helpers/rideHelper';
 import { findUserByRoleAndId } from '../helpers/userHelper';
+import { drivers } from '../helpers/socketHelper';
+import { serverSocket } from '../app';
 
 const saveRideRequest = async (req, res) => {
     try {
@@ -14,10 +17,15 @@ const saveRideRequest = async (req, res) => {
         const driverExists = await findUserByRoleAndId('DRIVER', driverId);
         if (driverExists) {
             const savedRideRequest = await createRideRequest(id, driverId);
+            const connectedDriver = await drivers.find(driver => driver.id === Number(driverId));
+            if (connectedDriver) {
+                const rideDetails = await findRidesByUserId('id', savedRideRequest.id);
+                serverSocket.to(connectedDriver.connectionId).emit('newRequest', rideDetails);
+            }
             return res.status(201).json({
                 status: 201,
-                message: 'Ride request created successfuy',
-                object: savedRideRequest
+                message: 'Ride request created successfully',
+                data: savedRideRequest
             });
         }
         return res.status(404).json({
@@ -25,6 +33,7 @@ const saveRideRequest = async (req, res) => {
             error: 'Driver with the given id does not exist'
         });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             status: 500,
             error: 'Server error!'
@@ -42,7 +51,7 @@ const approveRideRequest = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'request updated successfuly',
-            object: updatedRideRequest
+            data: updatedRideRequest[1].dataValues
         });
     }
     return res.status(404).json({
@@ -60,7 +69,7 @@ const denyRideRequest = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'request updated successfuly',
-            object: updatedRideRequest
+            data: updatedRideRequest[1].dataValues
         });
     }
     return res.status(404).json({
@@ -78,7 +87,7 @@ const saveRideStart = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'Ride start recorded successfuly.',
-            object: updatedRide
+            data: updatedRide[1].dataValues
         });
     } catch (error) {
         return res.status(500).json({
@@ -106,7 +115,7 @@ const saveRideEnd = async (req, res) => {
         return res.status(201).json({
             status: 201,
             message: 'Ride end recorded successfuly.',
-            object: updatedRide
+            data: updatedRide[1].dataValues
         });
     } catch (error) {
         return res.status(500).json({
@@ -116,10 +125,27 @@ const saveRideEnd = async (req, res) => {
     }
 };
 
+const viewMyRides = async (req, res) => {
+    const { id, role, name } = req.user;
+    const idFieldName = role === 'DRIVER' ? 'driverId' : 'commuterId';
+    const rides = await findRidesByUserId(idFieldName, id);
+    if(rides.length) {
+        return res.status(200).json({
+            status: 200,
+            data: rides
+        });
+    }
+    return res.status(200).json({
+        status: 200,
+        data: []
+    });
+};
+
 export {
     saveRideRequest,
     approveRideRequest,
     denyRideRequest,
     saveRideStart,
-    saveRideEnd
+    saveRideEnd,
+    viewMyRides
 }

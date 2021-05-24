@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import models from '../models';
 
-const { RideRequest, Ride } = models;
+const { Ride, User, Review } = models;
 
 const createRideRequest = async (commuterId, driverId) => {
     return await Ride.create({
@@ -22,11 +22,17 @@ const findRideById = async (id) => {
 };
 
 const findRidesByUserId = async (idFieldName, userId) => {
-    return await Ride.findAll({
+    const rides = await Ride.findAll({
         where: {
              [idFieldName]: userId
-        }
+        },
+        include: [
+            { model: User, as: 'commuter', attributes: [ 'id', 'name', 'username', 'phoneNumber', 'profilePhoto' ] },
+            { model: User, as: 'driver', attributes: [ 'id', 'name', 'username', 'phoneNumber', 'profilePhoto' ] },
+            {model: Review, as: 'review' }
+        ]
     });
+    return rides;
 };
 
 const updateRideStatus = async (id, newStatus) => {
@@ -36,7 +42,9 @@ const updateRideStatus = async (id, newStatus) => {
     {
         where: {
             id
-        }
+        },
+        returning: true,
+        plain: true
     });
 };
 
@@ -49,7 +57,9 @@ const updateRideStart = async (id, startLocation, startTime) => {
     {
         where: {
             id
-        }
+        },
+        returning: true,
+        plain: true
     });
 };
 
@@ -62,7 +72,20 @@ const updateRideEnd = async (id, endLocation, endTime) => {
     {
         where: {
             id
-        }
+        },
+        returning: true,
+        plain: true
+    });
+};
+
+const findUserRecentRide = async (userIdFieldName, userId) => {
+
+    return await Ride.findAll({
+        limit: 1,
+        where: {
+            [userIdFieldName]: userId
+        },
+        order: [ [ 'createdAt', 'DESC' ]]
     });
 };
 
@@ -72,5 +95,6 @@ export {
     findRidesByUserId,
     updateRideStatus,
     updateRideStart,
-    updateRideEnd
+    updateRideEnd,
+    findUserRecentRide
 };

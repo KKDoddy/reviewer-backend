@@ -20,6 +20,7 @@ node_modules/
 .npm
 package-lock.json
 yarn.lock
+package-lock.json
 
 # dotenv environment variables file
 .env

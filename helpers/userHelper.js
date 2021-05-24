@@ -6,7 +6,23 @@ const { User, Ride, Review } = models;
 
 
 const saveUser = async (body) => {
-    const { name, email, password, username, gender, role, birthDate, socialId, profilePhoto, provider, isVerified, cooperativeId, phoneNumber } = body;
+    const {
+        name,
+        email,
+        password,
+        username,
+        gender,
+        role,
+        birthDate,
+        socialId,
+        profilePhoto,
+        provider,
+        isVerified,
+        cooperativeId,
+        phoneNumber,
+        reviewCount,
+        cummulativeRating,
+    } = body;
     let salt, hashedPassword;
     if(password){
         const hashDetails = await hashPassword(password);
@@ -28,6 +44,8 @@ const saveUser = async (body) => {
         isVerified,
         role,
         cooperativeId,
+        reviewCount,
+        cummulativeRating,
         createdAt: new Date(),
         updatedAt: new Date()
     });
@@ -86,7 +104,7 @@ const findUserByRoleAndId = async (role, id, rideAlias, reviewAlias) => {
                     id
                 }
             },
-            include: [{ model: Ride, as: rideAlias }, { model: Review, as: reviewAlias }]
+            include: [{ model: Ride, as: rideAlias, where: { status: 'ENDED' }, required: false }, { model: Review, as: reviewAlias, include: [{ model: User, as: 'commuter', attributes: [ 'name', 'username', 'profilePhoto' ] }], required: false }]
         });
     } else {
         user = await User.findOne({
@@ -181,6 +199,18 @@ const processSocialAuthUserData = async (userData) => {
     });
   };
 
+  const updateRating = async ({reviewCount, cummulativeRating, driverId}) => {
+      return await User.update({
+          cummulativeRating,
+          reviewCount,
+      },
+      {
+          where: {
+              id: driverId
+          }
+      });
+  };
+
 export {
     saveUser,
     findUserBy,
@@ -192,5 +222,6 @@ export {
     findDriversByCooperativeId,
     findUserByEmailAndOrUsernameAndPhoneNumber,
     findUserByRoleAndCooperativeId,
-    updateUser
+    updateUser,
+    updateRating
 }
