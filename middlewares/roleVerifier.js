@@ -61,11 +61,23 @@ const isDriverOrCommuter = (req, res, next) => {
     });
 }
 
+const isManagerOrOperator = (req, res, next) => {
+    const { role } = req.user;
+    if (role === 'OPERATOR' || role === 'MANAGER') {
+        return next();
+    }
+    return res.status(401).json({
+        status: 401,
+        message: 'Sorry, you are not authorized to access this route.'
+    });
+};
+
 export {
     isOperator,
     isManager,
     isCommuter,
     isDriver,
     canViewReviews,
-    isDriverOrCommuter
+    isDriverOrCommuter,
+    isManagerOrOperator
 };

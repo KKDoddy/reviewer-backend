@@ -1,5 +1,6 @@
 import Router from 'express';
 import passport from 'passport';
+import multiparty from 'multiparty';
 import authController from '../controllers/authController';
 import tokenValidator from '../middlewares/tokenValidator';
 import {validateUniques, validateUpdateUniques} from '../middlewares/validateEmailOrUsername';
@@ -7,6 +8,7 @@ import { isOperator, isManager, isCommuter } from '../middlewares/roleVerifier';
 import  { signupValidator, signinValidator, coopMemberSignupValidator, validateForm, profileUpdateValidator } from '../middlewares/formValidations';
 import { isIdSafeInteger, prepIdForValidations } from '../middlewares/sanitizer';
 import { validateCooperativeId } from '../middlewares/cooperativeValiations';
+import { formDataParser } from '../middlewares/formDataParser';
 
 const router = Router();
 
@@ -14,7 +16,7 @@ const router = Router();
 
 //commuter signup route
 router.post('/signup', signupValidator, validateForm, validateUniques, authController.signup);
-router.put('/updateProfile', tokenValidator, isCommuter, profileUpdateValidator, validateForm, validateUpdateUniques, authController.updateProfile);
+router.put('/updateProfile', tokenValidator, formDataParser, profileUpdateValidator, validateForm, validateUpdateUniques, authController.updateProfile);
 
 //manager signup route
 router.post('/signup/manager', tokenValidator, isOperator, coopMemberSignupValidator, validateForm, validateUniques, prepIdForValidations, isIdSafeInteger, validateCooperativeId, authController.managerSignup);

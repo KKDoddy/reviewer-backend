@@ -1,14 +1,14 @@
 import { Op } from 'sequelize';
 import models from '../models';
 
-const { Cooperative } = models;
+const { Cooperative, User } = models;
 
-const saveCooperative = async (name, email, phone) => {
+const saveCooperative = async (name, email, phone, location) => {
     const newCooperative = await Cooperative.create({
         name: name.toUpperCase(),
         email,
         phone,
-        location: '',
+        location,
         createdAt: new Date(),
         updatedAt: new Date()
     });
@@ -17,7 +17,11 @@ const saveCooperative = async (name, email, phone) => {
 };
 
 const findAllCooperatives = async () => {
-    const foundCooperativesByKeyWord = await Cooperative.findAll();
+    const foundCooperativesByKeyWord = await Cooperative.findAll({
+        include: [
+            { model: User, as: 'memberOf', where: { role: 'MANAGER' }, attributes: [ 'id', 'name', 'role', 'username', 'email', 'phoneNumber', 'profilePhoto' ] },
+        ]
+    });
     return foundCooperativesByKeyWord;
 };
 
@@ -56,7 +60,10 @@ const findCooperativesByKeyWord = async (key) => {
                     [Op.like]: `%${key}%`
                 } }
             ]
-        }
+        },
+        include: [
+            { model: User, as: 'memberOf', where: { role: 'MANAGER' }, attributes: [ 'id', 'name', 'role', 'username', 'email', 'phoneNumber', 'profilePhoto' ] },
+        ]
     });
     return foundCooperatives;
 };

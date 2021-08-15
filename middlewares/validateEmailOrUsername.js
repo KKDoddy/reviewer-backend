@@ -59,6 +59,13 @@ const validateUpdateUniques = async (req, res, next) => {
             error: 'The provided username and phone number are already in use, change your username and phone number then try again.',
             fields: ['username', 'phoneNumber']
         });
+    } else if (phoneNumberExists || usernameExists) {
+        let fmessage = 'The provided ';
+        phoneNumberExists ? fmessage = (fmessage + 'phone number is already in use.') : fmessage = (fmessage + 'username is already in use.');
+        return res.status(409).json({
+            error: fmessage,
+            fields: phoneNumberExists ? ['phoneNumber'] : ['username']
+        });
     }
     return next();
 };

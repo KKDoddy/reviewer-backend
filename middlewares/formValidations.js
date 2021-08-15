@@ -24,7 +24,7 @@ const plateNumber = check('plateNumber')
     .notEmpty()
     .trim().
     isString()
-    .matches(/^R[A-Z][0-9]{3}[A-Z]$/);
+    .matches(/^R[A-Z][0-9]{3}[A-Z]$/i).withMessage('Invalid plate number');
 
 const entityId = (idName) => check(idName, `a valid ${idName} is required.`)
     .exists()
@@ -103,7 +103,8 @@ const signinValidator = [
 const cooperativeValidator = [
     name,
     email,
-    phone('phone')
+    phone('phone'),
+    justAnotherString('location')
 ];
 
 const motorVehicleInfoValidator = [

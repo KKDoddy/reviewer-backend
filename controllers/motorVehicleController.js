@@ -12,25 +12,35 @@ const createMotorVehicle = async (req, res) => {
     if (numbers == '000') {
         return res.status(422).json({
             status: 422,
-            error: 'Invalid plate number',
-            value: plateNumber
+            errors: {
+                errors: [{
+                    msg: 'Invalid plate number',
+                    param: 'plateNumber',
+                    value: plateNumber
+                }]
+            }
         });
     }
     const motorVehicleExists = await findMotorVehicleByPlateNumber(plateNumber);
     if (motorVehicleExists) {
         return res.status(422).json({
             status: 422,
-            error: `Motor vehicle with plate number '${plateNumber}' is already registered`,
-            value: plateNumber
+            errors: {
+                errors: [{
+                    msg: `Motor vehicle with plate number '${plateNumber}' is already registered`,
+                    param: 'plateNumber',
+                    value: plateNumber
+                }]
+            }
         });
     }
     try {
         const {plateNumber, driverId, owner} = req.body;
         const driverExists = await findUserByRoleAndId('DRIVER', driverId);
         if (driverExists) {
-            const savedMotorVehicle = await saveMotorVehicle(plateNumber, driverId, owner);
-            return res.status(200).json({
-                status: 200,
+            const savedMotorVehicle = await saveMotorVehicle(plateNumber.toUpperCase(), driverId, owner);
+            return res.status(201).json({
+                status: 201,
                 details: savedMotorVehicle,
                 message: 'New motor-vehicle save successfuly'
             });
@@ -38,7 +48,14 @@ const createMotorVehicle = async (req, res) => {
         return res.status(404).json({
             status: 404,
             error: 'driver not found',
-            field: 'driverId'
+            field: 'driverId',
+            errors: {
+                errors: [{
+                    msg: `driver not found`,
+                    param: 'driverId',
+                    value: driverId
+                }]
+            }
         });
     } catch (error) {
         return res.status(500).json({
@@ -94,6 +111,7 @@ const viewAllMotorVehicles = async (req, res) => {
 
 const searchMotorVehicles = async (req, res) => {
     const { key } = req.params;
+    console.log(key);
     try {
         const foundMotorVehicles = await findMotorVehiclesByKeyWord(key);
         if (foundMotorVehicles.length) {

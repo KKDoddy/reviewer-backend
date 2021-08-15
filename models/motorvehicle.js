@@ -7,7 +7,8 @@ const motorVehicleDefinition = (sequelize, DataTypes) => {
 
   MotorVehicle.associate = (models) => {
     MotorVehicle.belongsTo(models.User, {
-      foreignKey: 'driver'
+      foreignKey: 'driver',
+      as: 'vehicleDriver'
     });
   };
 

@@ -9,7 +9,8 @@ const cooperativeDefinition = (sequelize, DataTypes) => {
   
   Cooperative.associate = (models) => {
     Cooperative.hasMany(models.User, {
-      foreignKey: 'cooperativeId'
+      foreignKey: 'cooperativeId',
+      as: 'memberOf'
     });
   };
 

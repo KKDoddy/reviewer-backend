@@ -89,6 +89,18 @@ const findUserRecentRide = async (userIdFieldName, userId) => {
     });
 };
 
+const findRidesByDriverIds = async (ids) => {
+    return await Ride.count({
+        where: {
+            driverId: ids
+        }
+    });
+};
+
+const getAllRidesCount = async () => {
+    return await Ride.count();
+};
+
 export {
     createRideRequest,
     findRideById,
@@ -96,5 +108,7 @@ export {
     updateRideStatus,
     updateRideStart,
     updateRideEnd,
-    findUserRecentRide
+    findUserRecentRide,
+    findRidesByDriverIds,
+    getAllRidesCount
 };

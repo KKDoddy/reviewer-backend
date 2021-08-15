@@ -42,18 +42,26 @@ const registerSocket = async (socket) => {
           if(role === 'DRIVER'){
               socket.on('broadcastLocation', (location) => {
                       socket.driverDetails = {id, name};
-                      const driverExists = drivers.find(driver => driver.id === id);
-                      if(!driverExists){
+                      const driverExistsIndex = drivers.findIndex(driver => driver.id === id);
+                      if(driverExistsIndex === -1){
                         drivers.push({ id, name, profilePhoto, longitude: location.longitude, latitude: location.latitude, phoneNumber, cummulativeRating, reviewCount, connectionId: socket.id });
                         console.log(`new driver: ${name} ,added to array`);
-                        socket.broadcast.emit('addDriver', [{ id, name, profilePhoto, longitude: location.longitude, latitude: location.latitude, phoneNumber, cummulativeRating, reviewCount, connectionId: socket.id }]);
+                        socket.broadcast.emit('updateDrivers', drivers);
                         console.log(`broadcast emitted to all connected clients`);
                       } else {
+                        console.log(location);
+                        drivers[driverExistsIndex] = {
+                          ...drivers[driverExistsIndex],
+                          latitude: location.latitude,
+                          longitude: location.longitude
+                        };
                         console.log(`driver exists in the array already.\n${JSON.stringify(drivers)}`);
+                        socket.broadcast.emit('updateDrivers', drivers);
+                        console.log(`broadcast emitted to all connected clients`);
                       }
               });
-            } else {
-              socket.emit('addDriver', drivers);
+          } else {
+              socket.emit('updateDrivers', drivers);
           }
             return;
         }
@@ -64,7 +72,7 @@ const registerSocket = async (socket) => {
       console.log(`disconnected Driver details: ${JSON.stringify(socket.driverDetails)}`);
       if (socket.driverDetails) {
         drivers = drivers.filter(driver => driver.id !== socket.driverDetails.id);
-        socket.broadcast.emit('removeDriver', socket.driverDetails);
+        socket.broadcast.emit('updateDrivers', drivers);
       }
     });
 };

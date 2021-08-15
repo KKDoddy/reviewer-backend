@@ -65,11 +65,25 @@ const destroyReview = async (id) => {
     });
 };
 
+const findReviewsByDriverIds = async (ids) => {
+    return await Review.count({
+        where: {
+            driverId: ids
+        }
+    });
+};
+
+const getAllReviewsCount = async () => {
+    return await Review.count();
+};
+
 export {
     createReview,
     findReviewById,
     findReviewsByUserId,
     updateReview,
     findReviewByRideId,
-    destroyReview
+    destroyReview,
+    findReviewsByDriverIds,
+    getAllReviewsCount
 };

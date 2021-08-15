@@ -2,7 +2,7 @@ import { Op } from 'sequelize';
 import models from '../models';
 import { hashPassword } from '../helpers/hasher';
 
-const { User, Ride, Review } = models;
+const { User, Ride, Review, Cooperative } = models;
 
 
 const saveUser = async (body) => {
@@ -82,16 +82,26 @@ const findUserBy = async (field, value) => {
     return await User.findOne({
         where: {
             [field]: value
-        }
+        },
+        include: [{ model: Cooperative, as: 'memberOf' }]
     });
 };
 
 const findAllUsersByRole = async (role) => {
-    return await User.findAll({
-        where: {
-            role: role.toUpperCase()
-        }
-    });
+    if(role === 'MANAGER') {
+        return await User.findAll({
+            where: {
+                role: role.toUpperCase()
+            },
+            include: [{ model: Cooperative, as: 'memberOf'}]
+        });
+    } else {
+        return await User.findAll({
+            where: {
+                role: role.toUpperCase()
+            }
+        });
+    }
 };
 
 const findUserByRoleAndId = async (role, id, rideAlias, reviewAlias) => {
@@ -132,7 +142,7 @@ const findUserByRoleAndCooperativeId = async (role, cooperativeId) => {
 
 const findDriversByCooperativeId = async (cooperativeId) => {
     return await User.findAll({
-        attributes: ['id'],
+        attributes: ['id', 'name', 'username', 'email', 'phoneNumber', 'profilePhoto', 'cummulativeRating', 'reviewCount'],
         where: {
             [Op.and]: {
                 role: 'DRIVER',
@@ -144,7 +154,7 @@ const findDriversByCooperativeId = async (cooperativeId) => {
 
 const findUserByRoleAndKeyWord = async (role, key) => {
     return await User.findAll({
-        attributes: ['id', 'name', 'username', 'phoneNumber', 'profilePhoto'],
+        attributes: ['id', 'name', 'username', 'phoneNumber', 'email', 'profilePhoto', 'cummulativeRating', 'reviewCount'],
         where: {
             [Op.and]: {
                 role: role.toUpperCase(),
@@ -157,10 +167,41 @@ const findUserByRoleAndKeyWord = async (role, key) => {
                     } },
                     { username: {
                         [Op.like]: `%${key}%`
+                    } },
+                    { phoneNumber: {
+                        [Op.like]: `%${key}%`
                     } }
                 ]
             }
-        }
+        },
+        include: [{ model: Cooperative, as: 'memberOf'}]
+    });
+};
+
+const searchDriversByRoleAndKeyWord = async (role, key, cooperativeId) => {
+    return await User.findAll({
+        attributes: ['id', 'name', 'username', 'phoneNumber', 'email', 'profilePhoto', 'cummulativeRating', 'reviewCount'],
+        where: {
+            [Op.and]: {
+                role: role.toUpperCase(),
+                cooperativeId,
+                [Op.or]: [
+                    { name: {
+                        [Op.like]: `%${key}%`
+                    } },
+                    { email: {
+                        [Op.like]: `%${key}%`
+                    } },
+                    { username: {
+                        [Op.like]: `%${key}%`
+                    } },
+                    { phoneNumber: {
+                        [Op.like]: `%${key}%`
+                    } }
+                ]
+            }
+        },
+        include: [{ model: Cooperative, as: 'memberOf'}]
     });
 };
 
@@ -184,13 +225,15 @@ const processSocialAuthUserData = async (userData) => {
     return { isNew: true, user: _json };
   }
 
-  const updateUser = async ({ name, username, phoneNumber, gender, birthdate, id }) => {
+  const updateUser = async ({ name, username, phoneNumber, gender, birthdate, profilePhoto, id }) => {
+      let userData = {}
+      if(profilePhoto) {
+          userData = { name, username, phoneNumber, gender: gender.toUpperCase(), birthdate, profilePhoto };
+      } else {
+        userData = { name, username, phoneNumber, gender: gender.toUpperCase(), birthdate };
+      }
     return await User.update({
-        name,
-        username,
-        phoneNumber,
-        gender: gender.toUpperCase(),
-        birthdate
+        ...userData
     },
     {
         where: {
@@ -211,6 +254,16 @@ const processSocialAuthUserData = async (userData) => {
       });
   };
 
+const findAllDriversByCooperative = async (cooperativeId) => {
+    return await User.findAll({
+        attributes: ['id', 'cooperativeId', 'cummulativeRating', 'reviewCount', 'name', 'profilePhoto', 'phoneNumber', 'email', 'username', 'gender'],
+        where: {
+            role: 'DRIVER',
+            cooperativeId
+        }
+    });
+};
+
 export {
     saveUser,
     findUserBy,
@@ -223,5 +276,7 @@ export {
     findUserByEmailAndOrUsernameAndPhoneNumber,
     findUserByRoleAndCooperativeId,
     updateUser,
-    updateRating
+    updateRating,
+    findAllDriversByCooperative,
+    searchDriversByRoleAndKeyWord
 }

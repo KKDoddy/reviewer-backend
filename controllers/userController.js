@@ -1,4 +1,4 @@
-import { findUserByRoleAndId, findAllUsersByRole, findUserByRoleAndKeyWord } from '../helpers/userHelper';
+import { findUserByRoleAndId, findAllUsersByRole, findUserByRoleAndKeyWord, findUserBy, findDriversByCooperativeId, searchDriversByRoleAndKeyWord } from '../helpers/userHelper';
 
 const viewSingleManager = async (req, res) => {
     let { id } = req.params;
@@ -123,8 +123,10 @@ const searchManagers = async (req, res) => {
 
 const searchDrivers = async (req, res) => {
     const { key } = req.params;
+    const { role, cooperativeId } = req.user;
     try {
-        const foundDrivers = await findUserByRoleAndKeyWord('DRIVER', key);
+        let foundDrivers = {};
+        foundDrivers = role === 'MANAGER' ? await searchDriversByRoleAndKeyWord('DRIVER', key, cooperativeId) : await findUserByRoleAndKeyWord('DRIVER', key);
         if (foundDrivers.length) {
             return res.status(200).json({
                 status: 200,
@@ -170,6 +172,49 @@ const viewCommuterProfile = async (req, res) => {
     }
 };
 
+const viewOwnProfile = async (req, res) => {
+    const {id} = req.user;
+    try {
+        const userProfile = await findUserBy('id', id);
+        if(userProfile) {
+            let { username, name, email, gender, role, profilePhoto, phoneNumber, memberOf } = userProfile;
+            if(memberOf){
+                memberOf = {
+                    name: memberOf.name,
+                    phone: memberOf.phone,
+                    email: memberOf.email,
+                    id: memberOf.id
+                };
+            }
+            return res.status(200).json({
+                status: 200,
+                data: { username, name, email, gender, role, profilePhoto, phoneNumber, memberOf }
+            });
+        } else {
+            return res.status(404).json({
+                status: 404,
+                error: 'User not found'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            status: 500,
+            error: 'Server error!'
+        });
+    }
+}
+
+const viewAllCooperativeDrivers = async (req, res) => {
+    let { id } = req.params;
+    id = Number(id);
+    const drivers = await findDriversByCooperativeId(id);
+    return res.status(200).json({
+        status: 200,
+        data: drivers
+    });
+};
+
 export {
     viewSingleManager,
     viewAllManagers,
@@ -178,4 +223,6 @@ export {
     viewAllDrivers,
     searchDrivers,
     viewCommuterProfile,
+    viewOwnProfile,
+    viewAllCooperativeDrivers
 }
